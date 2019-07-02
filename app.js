@@ -7,7 +7,7 @@ const middleware = require('./utils/middleware.js');
 const db = require('./models/db.js');
 
 app.use(bodyParser.json());
-app.use(middleware.requestLogger);
+//app.use(middleware.requestLogger);
 
 //api
 app.use('/api/outlets', outletsRouter);
