@@ -8,7 +8,7 @@ outletsRouter.get('/', async (req, res) => {
             res.status(401).send({ error: 'token missing' });
         }
         const userId = await getUserId(accessToken);
-        const outlets = await getAll(userId);
+        const outlets = await getAllOutlets(userId);
         res.json(outlets);
     } catch (exception) {
         next(exception);
@@ -18,7 +18,7 @@ outletsRouter.get('/', async (req, res) => {
 outletsRouter.get('/:id', async (req, res, next) => {
     const outletId = req.params.id;
     try {
-        const outlet = await getOne(outletId);
+        const outlet = await getOneOutlet(outletId);
         res.send(outlet);
     } catch (exception) {
         next(exception);
@@ -95,7 +95,7 @@ function getUserId(accessToken) {
         });
     });
 }
-function getAll(userId) {
+function getAllOutlets(userId) {
     return new Promise((resolve, reject) => {
         db.query('select * from outlet where user_id = ?', [userId], (error, results) => {
             if (error) {
@@ -106,7 +106,7 @@ function getAll(userId) {
         });
     });
 }
-function getOne(outletId) {
+function getOneOutlet(outletId) {
     return new Promise((resolve, reject) => {
         db.query('select * from outlet where id = ?', [outletId], (error, results) => {
             if (error) {
