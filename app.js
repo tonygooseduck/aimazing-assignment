@@ -10,7 +10,6 @@ const middleware = require('./utils/middleware.js');
 const db = require('./models/db.js');
 
 app.use(bodyParser.json());
-//app.use(middleware.requestLogger);
 
 //api
 app.use(express.static('public'));
@@ -19,4 +18,6 @@ app.use('/api/outlets', outletsRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/transactions', transactionsRouter);
 
+app.use(middleware.unknownEndpoint);
+app.use(middleware.errorHandler);
 module.exports = app;
