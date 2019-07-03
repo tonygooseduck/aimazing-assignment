@@ -24,7 +24,8 @@ usersRouter.post('/', async (req, res, next) => {
             access_expired: now + 30 * 24 * 60 * 60 * 1000
         }
         const newUser = await createUser(user);
-        res.send(newUser);
+        res.cookie('access_token', accessToken);
+        res.send(accessToken);
     } catch (exception) {
         next(exception);
     }

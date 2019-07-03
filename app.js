@@ -13,6 +13,7 @@ app.use(bodyParser.json());
 //app.use(middleware.requestLogger);
 
 //api
+app.use(express.static('public'));
 app.use('/api/login', loginRouter);
 app.use('/api/outlets', outletsRouter);
 app.use('/api/users', usersRouter);

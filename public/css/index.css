@@ -1,0 +1,24 @@
+#user {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#action {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#create-outlet {
+    display: none;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.btn-secondary {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.dataset {
+    display: none;
+}

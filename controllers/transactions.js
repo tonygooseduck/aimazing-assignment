@@ -96,11 +96,15 @@ function createTransaction(data) {
 
 function getAllTransactions(userId) {
     return new Promise((resolve, reject) => {
+        let date = Date.now();
         const query = 'select outlet.name, product_name, product_quantity, product_price, date from user inner join outlet on user.id = outlet.user_id inner join transaction on outlet.id = transaction.outlet_id where user.id = ? order by date desc;'
         db.query(query, userId, (error, results) => {
             if (error) {
                 reject(error);
             } else {
+                for (let i = 0; i < results.length; i += 1) {
+                    results[i].date = results[i].date - date;
+                }
                 resolve(results);
             }
         });

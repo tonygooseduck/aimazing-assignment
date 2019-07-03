@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/cover/" />
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+    <title>Outlet managment page</title>
+    <link rel="stylesheet" type="text/css" href="/css/index.css" />
+</head>
+
+<body>
+    <div id="user" class="container">
+        <div class="row">
+            <div class="col">
+                <input id="signup-name" type="name" placeholder="Name" required />
+                <input id="signup-email" type="email" placeholder="Email" required />
+                <input id="signup-password" type="password" placeholder="Password" required />
+                <input id="signup" type="submit" value="Sign up" />
+            </div>
+            <div class="col">
+                <input id="signin-email" type="email" placeholder="Email" required />
+                <input id="signin-password" type="password" placeholder="Password" required />
+                <input id="signin" type="submit" value="Sign in" />
+            </div>
+        </div>
+    </div>
+    <div id="action" class="container">
+        <div class="row">
+            <div class="col">
+                <button id="add-outlet" class="btn btn-lg btn-primary btn-block">Add Outlet</button>
+            </div>
+            <div class="col">
+                <button id="logout" class="btn btn-lg btn-primary btn-block">Logout</button>
+            </div>
+            <div class="col">
+                <button id="get-transaction" class="btn btn-lg btn-primary btn-block">Transaction List</button>
+            </div>
+        </div>
+        <div id="create-outlet" class=row>
+            <div class="col">
+                <input id="outlet-name" type="name" placeholder="Name" required />
+                <input id="outlet-phone" placeholder="Phone" required />
+                <input id="outlet-address" placeholder="Address" required />
+                <input id="add-outlet-button" type="submit" value="add" />
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div id="outlets">
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <script>
+        document.querySelector("#signup").addEventListener("click", () => {
+            let xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    if (getCookie('access_token')) {
+                        document.querySelector("#user").style.display = "none";
+                    }
+                }
+            };
+            xhttp.open("POST", "/api/users");
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            xhttp.send(JSON.stringify({ name: document.querySelector("#signup-name").value, email: document.querySelector("#signup-email").value, password: document.querySelector("#signup-password").value }));
+        });
+        document.querySelector("#signin").addEventListener("click", () => {
+            let xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    //let data = JSON.parse(this.responseText);
+                    console.log(this.responseText);
+                    console.log(document.cookie);
+                    if (getCookie('access_token')) {
+                        alert('Sign in succeeded!');
+                        window.location.reload(true);
+                    }
+                }
+            };
+            xhttp.open("POST", "/api/login");
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            xhttp.send(JSON.stringify({ email: document.querySelector("#signin-email").value, password: document.querySelector("#signin-password").value }));
+        });
+        function getCookie(cname) {
+            let name = cname + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+    </script>
+    <script>
+        document.querySelector("#add-outlet").addEventListener("click", () => {
+            document.querySelector("#create-outlet").style.display = "flex";
+        });
+        document.querySelector("#add-outlet-button").addEventListener("click", () => {
+            let xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+
+                }
+            };
+            xhttp.open("POST", "/api/outlets");
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            xhttp.setRequestHeader("authorization", "Bearer " + getCookie("access_token"));
+            xhttp.send(JSON.stringify({ name: document.querySelector("#outlet-name").value, phone: document.querySelector("#outlet-phone").value, address: document.querySelector("#outlet-address").value }));
+        });
+    </script>
+    <script>
+        if (getCookie('access_token')) {
+            document.querySelector("#user").style.display = "none";
+            let getOutlet = new XMLHttpRequest();
+            getOutlet.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    let data = JSON.parse(this.responseText);
+                    console.log(data);
+                    let html = "<table class='table table-striped'><thead><tr><th scope='col'>Outlet Name</th><th scope='col'>Address</th><th scope='col'>Action</th></tr></thead><tbody>";
+                    for (let i = 0; i < data.length; i += 1) {
+                        html += `<tr data-id = '${data[i].id}' data-name = '${data[i].name}' data-phone = '${data[i].phone}' data-address = '${data[i].address}'><th scope='row'>${data[i].name}</th>`;
+                        html += "<td>" + data[i].address + "</td>";
+                        html += "<td><button class='btn btn-sm btn-secondary'>Edit</button><button class='btn btn-sm btn-secondary'>Delete</button><button class='btn btn-sm btn-secondary'>Add Transaction</button>";
+                        html += "</tr>";
+                        html += `<tr id = '${data[i].id}' class='dataset'>`;
+                        html += `<th scope='row'> Name: ${data[i].name}</th><td>Address: ${data[i].address}</td><td>Phone: ${data[i].phone}</td></tr>`;
+                        html += `<tr class='dataset'><th scope='row'><input placeholder='Name'></th><td><input placeholder='Phone'></td><td><input placeholder='Address'></td></tr>`;
+                        html += `<tr class='dataset'><th scope='row'><input placeholder='Product Name'></th><td><input placeholder='Quantity'></td><td><input placeholder='Price'></td></tr>`;
+
+                    }
+                    html += "</tbody></table>";
+                    document.querySelector("#outlets").innerHTML = html;
+                }
+            };
+            getOutlet.open("GET", "/api/outlets");
+            getOutlet.setRequestHeader("authorization", "Bearer " + getCookie("access_token"));
+            getOutlet.send();
+            document.querySelector("body").addEventListener("click", event => {
+                if (event.target.parentElement.tagName === "TR" && event.target.parentElement.firstChild.innerHTML != "Outlet Name") {
+                    console.log(event.target.parentElement.dataset);
+                    event.target.parentElement.nextElementSibling.style.display = "table-row";
+                    event.target.parentElement.nextElementSibling.nextElementSibling.style.display = "table-row";
+                    event.target.parentElement.nextElementSibling.nextElementSibling.nextElementSibling.style.display = "table-row";
+                }
+                if (event.target.innerHTML == "Edit") {
+                    let outletId = event.target.parentElement.parentElement.dataset.id;
+                    const name = (event.target.parentElement.parentElement.nextElementSibling.nextElementSibling.firstChild.firstChild.value);
+                    const phone = (event.target.parentElement.parentElement.nextElementSibling.nextElementSibling.firstChild.nextElementSibling.firstChild.value);
+                    const address = event.target.parentElement.parentElement.nextElementSibling.nextElementSibling.firstChild.nextElementSibling.nextElementSibling.firstChild.value;
+
+                    let updateOutlet = new XMLHttpRequest();
+                    updateOutlet.onreadystatechange = function () {
+                        if (this.readyState == 4 && this.status == 200) {
+
+                        }
+                    }
+                    let url = `/api/outlets/${outletId}`;
+                    updateOutlet.open("PUT", url);
+                    updateOutlet.setRequestHeader("Content-Type", "application/json");
+                    updateOutlet.setRequestHeader("authorization", "Bearer " + getCookie("access_token"));
+                    updateOutlet.send(JSON.stringify({ name: name, phone: phone, address: address }));
+
+                }
+                if (event.target.innerHTML == "Delete") {
+                    let outletId = event.target.parentElement.parentElement.dataset.id;
+                    console.log(outletId);
+                    let deleteOutlet = new XMLHttpRequest();
+                    deleteOutlet.onreadystatechange = function () {
+                        if (this.readyState == 4 && this.status == 200) {
+                            alert(this.responseText);
+                        }
+                    }
+                    let url = `/api/outlets/${outletId}`;
+                    deleteOutlet.open("DELETE", url);
+                    deleteOutlet.setRequestHeader("authorization", "Bearer " + getCookie("access_token"));
+                    deleteOutlet.send();
+
+                }
+                if (event.target.innerHTML == "Add Transaction") {
+                    let outletId = event.target.parentElement.parentElement.dataset.id;
+                    const product_name = event.target.parentElement.parentElement.nextElementSibling.nextElementSibling.nextElementSibling.firstChild.firstChild.value;
+                    const product_quantity = event.target.parentElement.parentElement.nextElementSibling.nextElementSibling.nextElementSibling.firstChild.nextElementSibling.firstChild.value;
+                    const product_price = event.target.parentElement.parentElement.nextElementSibling.nextElementSibling.nextElementSibling.firstChild.nextElementSibling.nextElementSibling.firstChild.value;
+                    let xhttp = new XMLHttpRequest();
+                    xhttp.onreadystatechange = function () {
+                        if (this.readyState == 4 && this.status == 200) {
+
+                        }
+                    };
+                    xhttp.open("POST", "/api/transactions");
+                    xhttp.setRequestHeader("Content-Type", "application/json");
+                    xhttp.setRequestHeader("authorization", "Bearer " + getCookie("access_token"));
+                    xhttp.send(JSON.stringify({ outletId: outletId, productName: product_name, productQuantity: product_quantity, productPrice: product_price }));
+                }
+            });
+        }
+    </script>
+    <script>
+        document.querySelector("#get-transaction").addEventListener("click", () => {
+            let getTransaction = new XMLHttpRequest();
+            getTransaction.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    let data = JSON.parse(this.responseText);
+                    console.log(data);
+                    let html = "<table class='table table-striped'><thead><tr><th scope='col'>Outlet Name</th><th scope='col'>Product Name</th><th scope='col'>Quantity</th><th scope='col'>Price</th><th scope='col'>Date</th></tr></thead><tbody>";
+                    for (let i = 0; i < data.length; i += 1) {
+                        html += `<tr><th scope='row'>${data[i].name}</th>`;
+                        html += `<td>${data[i].product_name}</td>`;
+                        html += `<td>${data[i].product_quantity}</td>`;
+                        html += `<td>${data[i].product_price}</td>`;
+                        html += `<td>${new Date(Date.now() + data[i].date).toLocaleDateString()}</td>`;
+                        html += "</tr>";
+                    }
+                    html += "</tbody></table>";
+                    document.querySelector("#outlets").innerHTML = html;
+                }
+            };
+            getTransaction.open("GET", "/api/transactions");
+            getTransaction.setRequestHeader("authorization", "Bearer " + getCookie("access_token"));
+            getTransaction.send();
+        });
+    </script>
+    <script>
+        document.querySelector("#logout").addEventListener("click", () => {
+            const delete_cookie = name => {
+                document.cookie = name + "=; expires= Thu, 01 Jan 1970 00:00:01 GMT;";
+            }
+            delete_cookie("access_token");
+            alert("Logout succeeded!");
+            window.location.reload(true);
+        });
+    </script>
+</body>
+
+</html>
